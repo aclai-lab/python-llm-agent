@@ -7,7 +7,7 @@ Questo laboratorio permette agli studenti di esplorare un modello linguistico lo
 - Sistema operativo: Linux
 - Python ≥ 3.8
 - Accesso a terminale
-- Modello GGUF scaricato in `./models/qwen/Qwen3-0.6B-Q8_0.gguf`
+- Modello GGUF scaricato in `./models/Qwen3-0.6B-Q8_0.gguf`
 
 ## 🔧 Installazione
 
@@ -24,7 +24,7 @@ Questo laboratorio permette agli studenti di esplorare un modello linguistico lo
 
 3. Verifica di aver scaricato il modello in:
    ```
-   ./models/qwen/Qwen3-0.6B-Q8_0.gguf
+   ./models/Qwen3-0.6B-Q8_0.gguf
    ```
 
    Puoi trovare i modelli compatibili su: [https://huggingface.co/TheBloke](https://huggingface.co/TheBloke)
