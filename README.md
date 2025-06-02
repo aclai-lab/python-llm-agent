@@ -27,7 +27,7 @@ Questo laboratorio permette agli studenti di esplorare un modello linguistico lo
    ./models/Qwen3-0.6B-Q8_0.gguf
    ```
 
-   Puoi trovare i modelli compatibili su: [https://huggingface.co/TheBloke](https://huggingface.co/TheBloke)
+   Puoi trovare i modelli compatibili su: [https://huggingface.co/unsloth](https://huggingface.co/unsloth)
 
 ## 🚀 Avvio
 
