@@ -1,0 +1,6 @@
+# Ignore downloaded models
+models/
+
+# Ignore virtual environment
+.venv/
+venv
