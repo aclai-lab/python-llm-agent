@@ -11,18 +11,18 @@ Questo laboratorio permette agli studenti di esplorare un modello linguistico lo
 
 ## 🔧 Installazione
 
-1. Crea un ambiente virtuale (opzionale ma consigliato)
+1. crea un ambiente virtuale (opzionale ma consigliato)
     ```bash
     python -m venv venv
     source venv/bin/activate
     ```
 
-2. Installa le dipendenze:
+2. installa le dipendenze:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Verifica di aver scaricato il modello in:
+3. verifica di aver scaricato il modello in:
    ```
    ./models/Qwen3-4B-Q4_K_M.gguf
    ```
@@ -39,13 +39,11 @@ python main.py
 
 ## 🧠 Cosa puoi fare
 
-* Conversa con l'LLM in italiano o inglese
-* Modifica il codice Python per cambiare la personalità dell'LLM
-* Aggiungi salvataggio della chat su file
-* Usa prompt creativi o tematici
+- implementare il main del programma
+- conversa con l'LLM in italiano o inglese
+- modifica il codice Python per cambiare la personalità dell'LLM
+- usa prompt creativi o tematici
+   - crea un assistente per lo studio
+   - simula una chat con uno scrittore o personaggio storico
+   - analizza come l’LLM risponde a prompt ambigui o specifici
 
-## 🧪 Idee per esercizi
-
-* Crea un assistente per lo studio
-* Simula una chat con uno scrittore o personaggio storico
-* Analizza come l’LLM risponde a prompt ambigui o specifici
