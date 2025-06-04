@@ -7,7 +7,8 @@ main: $(SRCS)
 	@echo "========= INSTALLAZIONE LLM ========="
 	@./install.sh
 	@echo "========= CREAZIONE AMBIENTE DI SVILUPPO ========="
-	@python3 -m venv $(VENV_DIR)
+	@pip install --user virtualenv --break-system-packages
+	@python3 -m virtualenv $(VENV_DIR)
 	@echo "========= INSTALLAZIONE DIPENDENZE PYTHON ========="
 	@./$(VENV_DIR)/bin/pip install -r requirements.txt
 
