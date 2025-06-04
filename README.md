@@ -1,13 +1,13 @@
 # Laboratorio LLM
 
-Questo laboratorio permette agli studenti di esplorare un modello linguistico locale (LLM) usando Python e `llama.cpp`. Il modello scelto è **Qwen3-0.6B** in formato `GGUF`, adatto a computer con risorse limitate.
+Questo laboratorio permette agli studenti di esplorare un modello linguistico locale (LLM) usando Python e `llama.cpp`. Il modello scelto è **Qwen3-4B** in formato `GGUF`, adatto a computer con risorse limitate.
 
 ## 📦 Requisiti
 
 - Sistema operativo: Linux
 - Python ≥ 3.8
 - Accesso a terminale
-- Modello GGUF scaricato in `./models/Qwen3-0.6B-Q8_0.gguf`
+- Modello GGUF scaricato in `./models/Qwen3-4B-Q4_K_M.gguf`
 
 ## 🔧 Installazione
 
@@ -24,7 +24,7 @@ Questo laboratorio permette agli studenti di esplorare un modello linguistico lo
 
 3. Verifica di aver scaricato il modello in:
    ```
-   ./models/Qwen3-0.6B-Q8_0.gguf
+   ./models/Qwen3-4B-Q4_K_M.gguf
    ```
 
    Puoi trovare i modelli compatibili su: [https://huggingface.co/unsloth](https://huggingface.co/unsloth)

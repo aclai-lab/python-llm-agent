@@ -11,7 +11,7 @@ def main():
     InputManager.set_name("luke")
 
     # Crea un'istanza dell'agente
-    agent = Agent(name="Qwen3-0.6B-Q8_0")
+    agent = Agent(name="Qwen3-4B-Q4_K_M")
 
     # Ciclo di conversazione
     agent.start_conversation()

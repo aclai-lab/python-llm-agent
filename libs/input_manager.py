@@ -53,7 +53,16 @@ class InputManager:
         atexit.register(on_exit)
 
     @staticmethod
-    def _is_exit_word(word: str):
+    def is_exit_word(word: str):
         """Verifica se una parola è una parola chiave per terminare la conversazione."""
         return word.lower() in ["esci", "exit", "quit"]
 
+    @staticmethod
+    def is_stats_word(word: str):
+        """Verifica se una parola è una parola chiave per mostrare le statistiche."""
+        return word.lower() in ["statistiche", "stats"]
+
+    @staticmethod
+    def is_clear_context_word(word: str):
+        """Verifica se una parola è una parola chiave per cancellare il contesto."""
+        return word.lower() in ["clear", "clc"]

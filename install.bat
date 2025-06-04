@@ -2,8 +2,8 @@
 setlocal
 
 set MODELS_DIR=models
-set MODEL_FILE_NAME=Qwen3-0.6B-Q8_0.gguf
-set MODEL_URL=https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/main/%MODEL_FILE_NAME%
+set MODEL_FILE_NAME=Qwen3-4B-Q4_K_M.gguf
+set MODEL_URL=https://huggingface.co/unsloth/Qwen3-4B-GGUF/resolve/main/%MODEL_FILE_NAME%
 
 set TOTAL_MODEL_PATH=%MODELS_DIR%\%MODEL_FILE_NAME%
 

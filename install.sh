@@ -1,8 +1,8 @@
 #!/bin/bash
 
 MODELS_DIR="models"
-MODEL_FILE_NAME="Qwen3-0.6B-Q8_0.gguf"
-MODEL_URL="https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/blob/main/${MODEL_FILE_NAME}"
+MODEL_FILE_NAME="Qwen3-4B-Q4_K_M.gguf"
+MODEL_URL="https://huggingface.co/unsloth/Qwen3-4B-GGUF/resolve/main/$MODEL_FILE_NAME"
 
 # Start program
 TOTAL_MODEL_PATH="$MODELS_DIR/$MODEL_FILE_NAME"
