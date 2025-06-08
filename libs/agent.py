@@ -127,6 +127,8 @@ class Agent:
                 
                 # Use multiline input support
                 user_input = InputManager._get_multiline_input()
+                if '/think' not in user_input:
+                    user_input += '/no_think'
                 self._send_prompt_to_llm(user_input)
     
                 # Se l'utente ha scritto "esci" o "exit" o "quit" allora termina la conversazione
