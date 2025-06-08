@@ -124,11 +124,11 @@ class Agent:
                     break
     
                 if InputManager.is_clear_context_word(self._prompt):
-                    self.reset_chat()
+                    self._reset_chat()
                     continue
     
                 if InputManager.is_stats_word(self._prompt):
-                    self.show_stats()
+                    self._show_stats()
                     continue
     
                 if incremental:
