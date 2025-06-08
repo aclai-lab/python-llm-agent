@@ -64,7 +64,7 @@ class Agent:
         
         for token in self.chat.generate_assistant_reply_stepped():
             if not in_think_check:
-                if token == "<think>":
+                if token == "<think>" or "</think>":
                     in_think_check = True
                     buffer.append(token)
                 else:
