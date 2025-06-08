@@ -35,6 +35,7 @@ class Agent:
         # Se esiste carica il modello LLM usando llama.cpp via llama-cpp-python
         self.llm = Llama(model_path=self.model_path, n_ctx=n_ctx, verbose=verbose)
         self.chat = Chat(self.llm, n_generate=n_generate)
+        self.chat.send_message(Chat.SYSTEM_KEY, system_prompt)
         InputManager.system_message("Modello caricato.")
 
         # Il modello saluta l'utente
