@@ -1,4 +1,6 @@
 import os
+import sys
+import select
 from llama_cpp import Llama
 
 from .input_manager import InputManager
@@ -87,32 +89,80 @@ class Agent:
         """
         print(f"{self.get_name()}: ", end="")
         yield self.chat.generate_assistant_reply_stepped()
-
+    
+    def get_multiline_input(self):
+        """
+        Get multiline input from the user. Works with pasted multiline text.
+        Returns when there's no more input available.
+        """
+        lines = []
+        
+        # Read the first line normally
+        first_line = input()
+        lines.append(first_line)
+        
+        # Check if there's more input waiting in the buffer
+        while True:
+            # For Unix-like systems (Linux, macOS)
+            if hasattr(select, 'select'):
+                # Check if there's data waiting to be read
+                rlist, _, _ = select.select([sys.stdin], [], [], 0.0)
+                if rlist:
+                    try:
+                        line = input()
+                        lines.append(line)
+                    except EOFError:
+                        break
+                else:
+                    break
+            # For Windows
+            else:
+                try:
+                    # Try to read another line with a very short timeout
+                    import msvcrt
+                    if msvcrt.kbhit():
+                        line = input()
+                        lines.append(line)
+                    else:
+                        break
+                except:
+                    # If we can't check for input, just try to read
+                    try:
+                        line = input()
+                        lines.append(line)
+                    except EOFError:
+                        break
+        
+        return '\n'.join(lines)
+    
     def start_conversation(self, incremental=False):
         InputManager.system_message("Puoi iniziare a conversare con l'LLM!")
         InputManager.system_message("Scrivi 'esci' per terminare.")
         InputManager.system_message("Scrivi 'stats' per vedere le statistiche.")
         InputManager.system_message("Scrivi 'clear' per cancellare il contesto.")
-
+    
         try:
             while True:
                 # Mostra il prompt e attendi l'input dell'utente
                 InputManager.prompt()
-                self.say(input())
-
+                
+                # Use multiline input support
+                user_input = self.get_multiline_input()
+                self.say(user_input)
+    
                 # Se l'utente ha scritto "esci" o "exit" o "quit" allora termina la conversazione
                 if InputManager.is_exit_word(self.raw_user_prompt()):
                     InputManager.system_message("Conversazione terminata.")
                     break
-
+    
                 if InputManager.is_clear_context_word(self.raw_user_prompt()):
                     self.reset_chat()
                     continue
-
+    
                 if InputManager.is_stats_word(self.raw_user_prompt()):
                     self.show_stats()
                     continue
-
+    
                 if incremental:
                     # Mostra la risposta dell'LLM in modo incrementale
                     for response in self.respond_incremental():
@@ -121,7 +171,7 @@ class Agent:
                     # Mostra l'intera risposta dell'LLM direttamente quando è completamente generata
                     # Invia il prompt all'LLM e ricevi la risposta
                     self._process_prompt()
-
+    
                     # Mostra la risposta dell'LLM
                     self.respond()
         except KeyboardInterrupt:
