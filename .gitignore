@@ -4,3 +4,6 @@ models/
 # Ignore virtual environment
 .venv/
 venv
+
+# Ignore pycache
+__pycache__
