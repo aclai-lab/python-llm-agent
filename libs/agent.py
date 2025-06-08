@@ -1,6 +1,5 @@
 import os
 import sys
-import select
 import ctypes
 from llama_cpp import Llama, llama_log_set
 
@@ -62,47 +61,6 @@ class Agent:
         for token in self.chat.generate_assistant_reply_stepped():
             yield token
     
-    def _get_multiline_input(self):
-        lines = []
-        
-        # Read the first line normally
-        first_line = input()
-        lines.append(first_line)
-        
-        # Check if there's more input waiting in the buffer
-        while True:
-            # For Unix-like systems (Linux, macOS)
-            if hasattr(select, 'select'):
-                # Check if there's data waiting to be read
-                rlist, _, _ = select.select([sys.stdin], [], [], 0.0)
-                if rlist:
-                    try:
-                        line = input()
-                        lines.append(line)
-                    except EOFError:
-                        break
-                else:
-                    break
-            # For Windows
-            else:
-                try:
-                    # Try to read another line with a very short timeout
-                    import msvcrt
-                    if msvcrt.kbhit():
-                        line = input()
-                        lines.append(line)
-                    else:
-                        break
-                except:
-                    # If we can't check for input, just try to read
-                    try:
-                        line = input()
-                        lines.append(line)
-                    except EOFError:
-                        break
-        
-        return '\n'.join(lines)
-    
     def start_conversation(self, incremental=True):
         InputManager.system_message("Puoi iniziare a conversare con l'LLM!")
         InputManager.system_message("Scrivi 'esci' per terminare.")
@@ -115,7 +73,7 @@ class Agent:
                 InputManager.show_user_prompt()
                 
                 # Use multiline input support
-                user_input = self._get_multiline_input()
+                user_input = InputManager._get_multiline_input()
                 self._send_prompt_to_llm(user_input)
     
                 # Se l'utente ha scritto "esci" o "exit" o "quit" allora termina la conversazione

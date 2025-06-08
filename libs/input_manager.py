@@ -1,5 +1,6 @@
 import sys
 import atexit
+import select
 from .colors import Colors
 
 # Eccezione personalizzata per gli errori di tipo
@@ -66,3 +67,45 @@ class InputManager:
     def is_clear_context_word(word: str):
         """Verifica se una parola è una parola chiave per cancellare il contesto."""
         return word.lower() in ["clear", "clc"]
+        
+    @staticmethod
+    def _get_multiline_input():
+        lines = []
+        
+        # Read the first line normally
+        first_line = input()
+        lines.append(first_line)
+        
+        # Check if there's more input waiting in the buffer
+        while True:
+            # For Unix-like systems (Linux, macOS)
+            if hasattr(select, 'select'):
+                # Check if there's data waiting to be read
+                rlist, _, _ = select.select([sys.stdin], [], [], 0.0)
+                if rlist:
+                    try:
+                        line = input()
+                        lines.append(line)
+                    except EOFError:
+                        break
+                else:
+                    break
+            # For Windows
+            else:
+                try:
+                    # Try to read another line with a very short timeout
+                    import msvcrt
+                    if msvcrt.kbhit():
+                        line = input()
+                        lines.append(line)
+                    else:
+                        break
+                except:
+                    # If we can't check for input, just try to read
+                    try:
+                        line = input()
+                        lines.append(line)
+                    except EOFError:
+                        break
+        
+        return '\n'.join(lines)
