@@ -10,6 +10,12 @@ from .chat import Chat
 MODELS_DIR = "./models/"
 
 class Agent:
+    """
+    Classe Agent che gestisce l'interazione con un modello LLM tramite llama.cpp.
+    
+    Questa classe fornisce un'interfaccia per caricare un modello LLM, gestire le conversazioni
+    e fornire risposte incrementali o complete agli utenti.
+    """
 
     def __init__(self,
         name: str,
@@ -18,6 +24,15 @@ class Agent:
         system_prompt: str = "Sei un assistente virtuale che risponde alle domande degli utenti.",
         n_generate: int = 1024
     ):
+        """
+        Inizializza un nuovo agente LLM.
+        
+        @param name: Nome del modello da caricare (senza estensione .gguf)
+        @param n_ctx: Dimensione del contesto in token (default: 2048)
+        @param verbose: Se True, mostra output dettagliato durante il caricamento (default: False)
+        @param system_prompt: Prompt di sistema per inizializzare il comportamento dell'AI (default: messaggio in italiano)
+        @param n_generate: Numero massimo di token da generare per risposta (default: 1024)
+        """
         if not verbose:
             def my_log_callback(level, message, user_data): pass
             log_callback = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_char_p, ctypes.c_void_p)(my_log_callback)
@@ -43,21 +58,49 @@ class Agent:
         self._show_llm_response("Qual è la tua domanda?")
 
     def _get_name(self):
+        """
+        Restituisce il nome dell'agente formattato con colori.
+        
+        @return: Nome dell'agente colorato in ciano
+        """
         return Colors.cyan(self.name)
 
     def _send_prompt_to_llm(self, prompt: str):
+        """
+        Invia un prompt al modello LLM.
+        
+        @param prompt: Il testo del prompt da inviare al modello
+        """
         self.chat.send_message(self.chat.USER_KEY, prompt)
         self._prompt = prompt
 
     def _show_llm_response(self, response=None):
+        """
+        Mostra la risposta dell'LLM nella console.
+        
+        @param response: La risposta da mostrare. Se None, usa self._response (default: None)
+        """
         if response is not None:
             self._response = response
         print(f"{self._get_name()}: {self._response.strip()}")
 
     def _generate_llm_response(self):
+        """
+        Genera una risposta completa dall'LLM e la memorizza in self._response.
+        
+        Questo metodo genera l'intera risposta prima di restituirla.
+        """
         self._response, self._remaining_ctx_tokens = self.chat.generate_assistant_reply()
 
     def _generate_llm_response_incremental(self):
+        """
+        Genera una risposta dall'LLM in modo incrementale (token per token).
+        
+        Questo metodo filtra automaticamente i tag <think></think> vuoti per fornire
+        una migliore esperienza utente durante la generazione incrementale.
+        
+        @return: Generator che produce token di risposta uno alla volta
+        """
         print(f"{self._get_name()}: ", end="")
         
         buffer = []
@@ -115,6 +158,19 @@ class Agent:
             yield buf_token
     
     def start_conversation(self, incremental=True):
+        """
+        Avvia una conversazione interattiva con l'LLM.
+        
+        Questo metodo gestisce il loop principale della conversazione, permettendo all'utente
+        di interagire con il modello attraverso comandi speciali e input di testo.
+        
+        Comandi supportati:
+        - 'esci', 'exit', 'quit': Termina la conversazione
+        - 'clear': Cancella il contesto della conversazione
+        - 'stats': Mostra statistiche sui token utilizzati
+        
+        @param incremental: Se True, mostra le risposte token per token; se False, mostra la risposta completa (default: True)
+        """
         InputManager.system_message("Puoi iniziare a conversare con l'LLM!")
         InputManager.system_message("Scrivi 'esci' per terminare.")
         InputManager.system_message("Scrivi 'stats' per vedere le statistiche.")
@@ -166,9 +222,22 @@ class Agent:
                 InputManager.error(f"Si è verificato un errore: {e}")
 
     def _reset_chat(self):
+        """
+        Resetta il contesto della conversazione mantenendo il prompt di sistema.
+        
+        Questo metodo cancella tutta la cronologia della conversazione ma mantiene
+        il prompt di sistema originale per preservare il comportamento dell'AI.
+        """
         self.chat.reset_chat(keep_system=True)
         self._show_llm_response("Conversazione resettata: non ricordo più nulla :(")
 
     def _show_stats(self):
+        """
+        Mostra le statistiche sui token utilizzati e disponibili.
+        
+        Visualizza informazioni utili per monitorare l'utilizzo del contesto:
+        - Token utilizzati nella conversazione corrente
+        - Token rimanenti nel contesto disponibile
+        """
         InputManager.system_message(f"  token usati: {self.chat.tokens_used()}")
         InputManager.system_message(f"  token rimanenti: {self.chat.context_available()}")
