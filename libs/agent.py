@@ -59,7 +59,8 @@ class Agent:
 
     def _generate_llm_response_incremental(self):
         print(f"{self._get_name()}: ", end="")
-        yield self.chat.generate_assistant_reply_stepped()
+        for token in self.chat.generate_assistant_reply_stepped():
+            yield token
     
     def _get_multiline_input(self):
         lines = []
@@ -102,7 +103,7 @@ class Agent:
         
         return '\n'.join(lines)
     
-    def start_conversation(self, incremental=False):
+    def start_conversation(self, incremental=True):
         InputManager.system_message("Puoi iniziare a conversare con l'LLM!")
         InputManager.system_message("Scrivi 'esci' per terminare.")
         InputManager.system_message("Scrivi 'stats' per vedere le statistiche.")
