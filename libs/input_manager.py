@@ -14,7 +14,7 @@ class InputManager:
         InputManager._user_name = name
 
     @staticmethod
-    def prompt():
+    def show_user_prompt():
         """Disegna il prompt per l'utente."""
         print(Colors.green(InputManager._user_name) + ": ", end="", flush=True)
 
