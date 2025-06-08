@@ -1,7 +1,8 @@
 import os
 import sys
 import select
-from llama_cpp import Llama
+import ctypes
+from llama_cpp import Llama, llama_log_set
 
 from .input_manager import InputManager
 from .colors import Colors
@@ -18,6 +19,11 @@ class Agent:
         system_prompt: str = "Sei un assistente virtuale che risponde alle domande degli utenti.",
         n_generate: int = 1024
     ):
+        if not verbose:
+            def my_log_callback(level, message, user_data): pass
+            log_callback = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_char_p, ctypes.c_void_p)(my_log_callback)
+            llama_log_set(log_callback, ctypes.c_void_p())
+        
         self.name = name
         self._prompt = ''
         InputManager.system_message("Caricamento del modello LLM...")
@@ -145,16 +151,10 @@ class Agent:
             else:
                 InputManager.error(f"Si è verificato un errore: {e}")
 
-    def reset_chat(self):
-        """
-        Resetta la conversazione.
-        """
+    def _reset_chat(self):
         self.chat.reset_chat(keep_system=True)
         self._show_llm_response("Conversazione resettata: non ricordo più nulla :(")
 
-    def show_stats(self):
-        """
-        Mostra le statistiche sull'utilizzo del modello LLM.
-        """
+    def _show_stats(self):
         InputManager.system_message(f"  token usati: {self.chat.tokens_used()}")
         InputManager.system_message(f"  token rimanenti: {self.chat.context_available()}")
