@@ -12,5 +12,8 @@ main: $(SRCS)
 	@echo "========= INSTALLAZIONE DIPENDENZE PYTHON ========="
 	@./$(VENV_DIR)/bin/pip install -r requirements.txt
 
-run:
+run_chat:
 	@./$(VENV_DIR)/bin/python3 start_chat.py
+
+run:
+	@./$(VENV_DIR)/bin/python3 complete.py
