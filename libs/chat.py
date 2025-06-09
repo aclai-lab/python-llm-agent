@@ -71,6 +71,16 @@ class Chat:
         self.messages: list[Message] = []
         self.tokens_cache: list[int] = []
         self.cache_initialize()
+        
+    
+    def generate_completion(self, text: str, grammar: LlamaGrammar | None = None):
+        text_tokens = self.tokenize_text(text=text, add_bos=False, special=False)
+        tokens_generated = 0
+        
+        for token in self.model.generate(tokens=text_tokens, temp=self.temperature, top_p=self.top_p, top_k=self.top_k, grammar=grammar):
+            yield self.detokenize_tokens(tokens=[token], special=False)
+            tokens_generated += 1
+            if tokens_generated >= self.n_generate: break
 
 
     def generate_assistant_reply(self, grammar: LlamaGrammar | None = None) -> tuple[str, int]:
