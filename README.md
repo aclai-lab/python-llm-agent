@@ -34,7 +34,7 @@ Questo laboratorio permette agli studenti di esplorare un modello linguistico lo
 Esegui il programma:
 
 ```bash
-python main.py
+python start_chat.py
 ```
 
 ## 🧠 Cosa puoi fare
@@ -46,4 +46,3 @@ python main.py
    - crea un assistente per lo studio
    - simula una chat con uno scrittore o personaggio storico
    - analizza come l’LLM risponde a prompt ambigui o specifici
-

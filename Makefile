@@ -13,4 +13,4 @@ main: $(SRCS)
 	@./$(VENV_DIR)/bin/pip install -r requirements.txt
 
 run:
-	@./$(VENV_DIR)/bin/python3 main.py
+	@./$(VENV_DIR)/bin/python3 start_chat.py
