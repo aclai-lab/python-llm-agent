@@ -151,22 +151,23 @@ class Agent:
 
                 # Use multiline input support
                 user_input = InputManager._get_multiline_input()
-                if '/think' not in user_input:
-                    user_input += ' /no_think'
-                self._send_prompt_to_llm(user_input)
 
                 # Se l'utente ha scritto "esci" o "exit" o "quit" allora termina la conversazione
-                if InputManager.is_exit_word(self._prompt):
+                if InputManager.is_exit_word(user_input):
                     InputManager.system_message("Conversazione terminata.")
                     break
 
-                if InputManager.is_clear_context_word(self._prompt):
+                if InputManager.is_clear_context_word(user_input):
                     self._reset_chat()
                     continue
 
-                if InputManager.is_stats_word(self._prompt):
+                if InputManager.is_stats_word(user_input):
                     self._show_stats()
                     continue
+                
+                if '/think' not in user_input:
+                    user_input += ' /no_think'
+                self._send_prompt_to_llm(user_input)
 
                 if incremental:
                     # Mostra la risposta dell'LLM in modo incrementale

@@ -52,26 +52,21 @@ class InputManager:
             print(Colors.blue("sistema") + ": il sistema è stato arrestato correttamente")
 
         atexit.register(on_exit)
-    
-    @staticmethod
-    def remove_think_tokens(prompt: str):
-        """Pulisce da /think e /no_think il prompt"""
-        return prompt.replace("/think", "").replace("/no_think", "").strip()
 
     @staticmethod
     def is_exit_word(word: str):
         """Verifica se una parola è una parola chiave per terminare la conversazione."""
-        return InputManager.remove_think_tokens(word).lower() in ["esci", "exit", "quit"]
+        return word.lower() in ["esci", "exit", "quit"]
 
     @staticmethod
     def is_stats_word(word: str):
         """Verifica se una parola è una parola chiave per mostrare le statistiche."""
-        return InputManager.remove_think_tokens(word).lower() in ["statistiche", "stats"]
+        return word.lower() in ["statistiche", "stats"]
 
     @staticmethod
     def is_clear_context_word(word: str):
         """Verifica se una parola è una parola chiave per cancellare il contesto."""
-        return InputManager.remove_think_tokens(word).lower() in ["clear", "clc"]
+        return word.lower() in ["clear", "clc"]
         
     @staticmethod
     def _get_multiline_input():
