@@ -48,7 +48,7 @@ class Agent:
             raise FileNotFoundError(f"Il modello {self.model_path} non esiste.")
 
         # Se esiste carica il modello LLM usando llama.cpp via llama-cpp-python
-        self.llm = Llama(model_path=self.model_path, n_ctx=n_ctx, verbose=verbose)
+        self.llm = Llama(model_path=self.model_path, n_ctx=n_ctx, verbose=verbose, seed=42)
         self.chat = Chat(self.llm, n_generate=n_generate)
         self.chat.send_message(Chat.SYSTEM_KEY, system_prompt)
         InputManager.system_message("Modello caricato.")
