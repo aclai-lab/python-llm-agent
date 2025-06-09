@@ -48,7 +48,7 @@ class Agent:
             raise FileNotFoundError(f"Il modello {self.model_path} non esiste.")
 
         # Se esiste carica il modello LLM usando llama.cpp via llama-cpp-python
-        self.llm = Llama(model_path=self.model_path, n_ctx=n_ctx, verbose=verbose, seed=42)
+        self.llm = Llama(model_path=self.model_path, n_ctx=n_ctx, verbose=verbose, seed=42, n_gpu_layers=-1)
         self.chat = Chat(self.llm, n_generate=n_generate)
         self.chat.send_message(Chat.SYSTEM_KEY, system_prompt)
         InputManager.system_message("Modello caricato.")
@@ -116,13 +116,13 @@ class Agent:
             else:
                 if token == "</think>":
                     in_think_check = False
-                    if not think_is_empty: yield token
+                    if not think_is_empty: yield f'</think>{Colors.T_RESET}'
                     continue
                 
                 if len(token.strip()) != 0:
                     if think_is_empty:
                         think_is_empty = False
-                        yield "<think>\n"
+                        yield f"{Colors.T_MAGENTA}<think>\n"
                     yield token
 
     def start_conversation(self, incremental=True, forget=False):
@@ -219,3 +219,4 @@ class Agent:
         """
         InputManager.system_message(f"  token usati: {self.chat.tokens_used()}")
         InputManager.system_message(f"  token rimanenti: {self.chat.context_available()}")
+        print(self.chat.get_raw_chat())
