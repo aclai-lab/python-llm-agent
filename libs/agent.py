@@ -61,10 +61,13 @@ class Agent:
         self.chat = Chat(self.llm, n_generate=n_generate, temperature=temperature, top_p=0.95, top_k=20)
         self.chat.send_message(Chat.SYSTEM_KEY, system_prompt)
         InputManager.system_message("Modello caricato.")
-
-        # Il modello saluta l'utente
-        self._show_llm_response("Ciao, sono un'intelligenza artificiale che può rispondere a qualsiasi domanda.")
-        self._show_llm_response("Qual è la tua domanda?")
+    
+    def complete_text(self, text: str):
+        print(f'{Colors.T_ORANGE}{Colors.T_BOLD}{text}{Colors.T_RESET}{Colors.T_BOLD_OFF}', end='')
+        
+        for chunk in self.chat.generate_completion(text):
+            print(chunk, end="", flush=True)
+        
 
     def _get_name(self):
         """
@@ -181,6 +184,10 @@ class Agent:
         InputManager.system_message("Scrivi 'esci' per terminare.")
         InputManager.system_message("Scrivi 'stats' per vedere le statistiche.")
         InputManager.system_message("Scrivi 'clear' per cancellare il contesto.")
+        
+        # Il modello saluta l'utente
+        self._show_llm_response("Ciao, sono un'intelligenza artificiale che può rispondere a qualsiasi domanda.")
+        self._show_llm_response("Qual è la tua domanda?")
 
         try:
             while True:
@@ -232,6 +239,12 @@ class Agent:
                 InputManager.system_message("Conversazione terminata.")
             else:
                 InputManager.error(f"Si è verificato un errore: {e}")
+    
+    def tokenize(self, text: str) -> list[int]:
+        return self.chat.tokenize_text(text=text, add_bos=False, special=False)
+    
+    def detokenize(self, tokens: list[int]) -> str:
+        return self.chat.detokenize_tokens(tokens=tokens, special=False)
 
     def send_instruction(self, incremental=True):
         """
