@@ -63,6 +63,14 @@ class Agent:
         InputManager.system_message("Modello caricato.")
     
     def complete_text(self, text: str):
+        """
+        Completa un testo dato utilizzando il modello LLM.
+
+        Stampa il testo di input in arancione grassetto, quindi genera e stampa
+        il completamento del modello in tempo reale.
+
+        @param text: Il testo da completare
+        """
         print(f'{Colors.T_ORANGE}{Colors.T_BOLD}{text}{Colors.T_RESET}{Colors.T_BOLD_OFF}', end='')
         
         for chunk in self.chat.generate_completion(text):
@@ -179,6 +187,7 @@ class Agent:
         - 'stats': Mostra statistiche sui token utilizzati
 
         @param incremental: Se True, mostra le risposte token per token; se False, mostra la risposta completa (default: True)
+        @param forget: Se True, resetta il contesto dopo ogni risposta (default: False)
         """
         InputManager.system_message("Puoi iniziare a conversare con l'LLM!")
         InputManager.system_message("Scrivi 'esci' per terminare.")
@@ -241,14 +250,31 @@ class Agent:
                 InputManager.error(f"Si è verificato un errore: {e}")
     
     def tokenize(self, text: str) -> list[int]:
+        """
+        Converte un testo in una lista di token utilizzando il tokenizzatore del modello.
+
+        @param text: Il testo da tokenizzare
+        @return: Lista di ID dei token corrispondenti al testo
+        """
         return self.chat.tokenize_text(text=text, add_bos=False, special=False)
     
     def detokenize(self, tokens: list[int]) -> str:
+        """
+        Converte una lista di token in testo utilizzando il tokenizzatore del modello.
+
+        @param tokens: Lista di ID dei token da convertire
+        @return: Stringa di testo corrispondente ai token
+        """
         return self.chat.detokenize_tokens(tokens=tokens, special=False)
 
     def send_instruction(self, incremental=True):
         """
         Invia un'istruzione all'LLM.
+
+        Avvia una conversazione con il modello resettando il contesto dopo ogni risposta,
+        utile per istruzioni singole senza mantenere la cronologia.
+
+        @param incremental: Se True, mostra le risposte token per token; se False, mostra la risposta completa (default: True)
         """
         self.start_conversation(incremental=incremental, forget=True)
 
@@ -258,6 +284,8 @@ class Agent:
 
         Questo metodo cancella tutta la cronologia della conversazione ma mantiene
         il prompt di sistema originale per preservare il comportamento dell'AI.
+
+        @param silent: Se True, non mostra il messaggio di conferma del reset (default: False)
         """
         self.chat.reset_chat(keep_system=True)
         if not silent:
