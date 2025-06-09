@@ -103,7 +103,6 @@ class Agent:
         """
         print(f"{self._get_name()}: ", end="")
         
-        buffer = ""
         in_think_check = False
         think_is_empty = False
         
@@ -112,7 +111,6 @@ class Agent:
                 if token == "<think>" or token == "</think>":
                     in_think_check = True
                     think_is_empty = True
-                    buffer += token
                 else:
                     yield token
             else:
@@ -122,7 +120,9 @@ class Agent:
                     continue
                 
                 if len(token.strip()) != 0:
-                    think_is_empty = False
+                    if think_is_empty:
+                        think_is_empty = False
+                        yield "<think>\n"
                     yield token
 
     def start_conversation(self, incremental=True, forget=False):
