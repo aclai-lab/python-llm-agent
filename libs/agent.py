@@ -251,14 +251,23 @@ class Agent:
             else:
                 InputManager.error(f"Si è verificato un errore: {e}")
     
-    def tokenize(self, text: str) -> list[int]:
+    def tokenize(self, text: str, show: bool = False) -> list[int]:
         """
         Converte un testo in una lista di token utilizzando il tokenizzatore del modello.
-
+    
         @param text: Il testo da tokenizzare
+        @param show: Se True, mostra i token in formato allineato
         @return: Lista di ID dei token corrispondenti al testo
         """
-        return self.chat.tokenize_text(text=text, add_bos=False, special=False)
+        tokens = self.chat.tokenize_text(text=text, add_bos=False, special=False)
+        
+        if show:
+            print(f"{Colors.T_BOLD}{'Token':>6} | {'Testo'}{Colors.T_BOLD_OFF}")
+            for token_id in tokens:
+                token_text = self.chat.detokenize_tokens([token_id])
+                print(f"{token_id:>6} | {token_text}")
+        
+        return tokens
     
     def detokenize(self, tokens: list[int]) -> str:
         """
