@@ -70,6 +70,7 @@ class InputManager:
         
     @staticmethod
     def _get_multiline_input():
+        used_multiline = False
         lines = []
         
         # Read the first line normally
@@ -86,6 +87,7 @@ class InputManager:
                     try:
                         line = input()
                         lines.append(line)
+                        used_multiline = True
                     except EOFError:
                         break
                 else:
@@ -107,5 +109,9 @@ class InputManager:
                         lines.append(line)
                     except EOFError:
                         break
+        
+        if used_multiline:
+            last_line = input()
+            lines.append(last_line)
         
         return '\n'.join(lines)
