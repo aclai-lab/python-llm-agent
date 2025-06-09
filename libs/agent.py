@@ -71,10 +71,12 @@ class Agent:
 
         @param text: Il testo da completare
         """
-        print(f'{Colors.T_ORANGE}{Colors.T_BOLD}{text}{Colors.T_RESET}{Colors.T_BOLD_OFF}', end='')
+        print(f'{text}{Colors.T_ORANGE}{Colors.T_BOLD}', end='')
         
         for chunk in self.chat.generate_completion(text):
             print(chunk, end="", flush=True)
+        
+        print(f'{Colors.T_RESET}{Colors.T_BOLD_OFF}')
         
 
     def _get_name(self):
