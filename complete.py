@@ -10,10 +10,10 @@ def main():
     InputManager.set_name("luke")
 
     # Crea un'istanza dell'agente
-    agent = Agent(name="Qwen3-4B-Q4_K_M", n_generate=32)
+    agent = Agent(name="Qwen3-4B-Q4_K_M", n_generate=1)
 
     # Tokenizza una frase
-    token = agent.tokenize("Ciao a tutti")
+    token = agent.tokenize("Ciao a tutti,")
     print(token)
     
     # De-tokenizza una frase
@@ -21,7 +21,7 @@ def main():
     print(testo)
     
     # Completa una frase
-    frase = "Ciao a tutti"
+    frase = "Ciao a tutti,"
     agent.complete_text(frase)
 
 
