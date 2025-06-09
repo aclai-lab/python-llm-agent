@@ -102,60 +102,28 @@ class Agent:
         @return: Generator che produce token di risposta uno alla volta
         """
         print(f"{self._get_name()}: ", end="")
-
-        buffer = []
+        
+        buffer = ""
         in_think_check = False
-
+        think_is_empty = False
+        
         for token in self.chat.generate_assistant_reply_stepped():
             if not in_think_check:
-                if token == "<think>" or "</think>":
+                if token == "<think>" or token == "</think>":
                     in_think_check = True
-                    buffer.append(token)
+                    think_is_empty = True
+                    buffer += token
                 else:
                     yield token
             else:
-                # We're checking what comes after <think>
-                buffer.append(token)
-
-                # Check if we have </think> immediately after <think> (possibly with newlines)
-                # Join buffer to check the pattern
-                buffered_text = ''.join(buffer)
-
-                # If we see </think>, check if it's right after <think> (with possible newlines)
-                if "</think>" in buffered_text:
-                    # Extract content between <think> and </think>
-                    start_idx = buffered_text.find("<think>") + 7
-                    end_idx = buffered_text.find("</think>")
-                    between_content = buffered_text[start_idx:end_idx]
-
-                    # Check if between content is only whitespace/newlines
-                    if between_content.strip() == "":
-                        # Skip the entire <think></think> block
-                        buffer = []
-                        in_think_check = False
-                        continue
-                    else:
-                        # There's content between tags, yield everything
-                        for buf_token in buffer:
-                            yield buf_token
-                        buffer = []
-                        in_think_check = False
-                else:
-                    # Check if we have any non-whitespace content after <think>
-                    # that's not part of </think>
-                    think_content = buffered_text[7:]  # Content after "<think>"
-
-                    # If we encounter any character that's not whitespace and not starting </think>
-                    if think_content.strip() and not think_content.strip().startswith("</think>"):
-                        # Yield everything in buffer
-                        for buf_token in buffer:
-                            yield buf_token
-                        buffer = []
-                        in_think_check = False
-
-        # Yield any remaining buffered tokens
-        for buf_token in buffer:
-            yield buf_token
+                if token == "</think>":
+                    in_think_check = False
+                    if not think_is_empty: yield token
+                    continue
+                
+                if len(token.strip()) != 0:
+                    think_is_empty = False
+                    yield token
 
     def start_conversation(self, incremental=True, forget=False):
         """
