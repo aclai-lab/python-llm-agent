@@ -1,6 +1,7 @@
 import os
 import sys
 import ctypes
+import time
 from llama_cpp import Llama, llama_log_set
 
 from .input_manager import InputManager
@@ -42,6 +43,12 @@ class Agent:
 
         self.name = name
         self._prompt = ''
+        
+        # Inizializza tracking tokens/sec
+        self.total_tokens_generated = 0
+        self.total_generation_time = 0.0
+        self.avg_tokens_per_sec = 0.0
+        
         InputManager.system_message("Caricamento del modello LLM...")
 
         # Verifica se il modello esiste
@@ -86,6 +93,19 @@ class Agent:
             self._response = response
         print(f"{self._get_name()}: {self._response.strip()}")
 
+    def _update_tokens_per_sec(self, tokens_count, generation_time):
+        """
+        Aggiorna le statistiche di generazione dei token.
+
+        @param tokens_count: Numero di token generati in questa risposta
+        @param generation_time: Tempo impiegato per generare i token (in secondi)
+        """
+        self.total_tokens_generated += tokens_count
+        self.total_generation_time += generation_time
+        
+        if self.total_generation_time > 0:
+            self.avg_tokens_per_sec = self.total_tokens_generated / self.total_generation_time
+
     def _generate_llm_response(self):
         """
         Genera una risposta completa dall'LLM e la memorizza in self._response.
@@ -109,7 +129,12 @@ class Agent:
         think_is_empty = False
         only_empty_so_far = True
         
+        start_time = time.time()
+        tokens_count = 0
+        
         for token in self.chat.generate_assistant_reply_stepped():
+            tokens_count += 1
+            
             if not in_think_check:
                 if token == "<think>" or token == "</think>":
                     in_think_check = True
@@ -134,6 +159,9 @@ class Agent:
                         yield f"{Colors.T_MAGENTA}<think>\n"
                 
                 if not think_is_empty: yield token
+        
+        generation_time = time.time() - start_time
+        self._update_tokens_per_sec(tokens_count, generation_time)
 
     def start_conversation(self, incremental=True, forget=False):
         """
@@ -226,6 +254,8 @@ class Agent:
         Visualizza informazioni utili per monitorare l'utilizzo del contesto:
         - Token utilizzati nella conversazione corrente
         - Token rimanenti nel contesto disponibile
+        - Velocità media di generazione dei token
         """
         InputManager.system_message(f"  token usati: {self.chat.tokens_used()}")
         InputManager.system_message(f"  token rimanenti: {self.chat.context_available()}")
+        InputManager.system_message(f"  velocità media: {self.avg_tokens_per_sec:.0f} token/sec")
