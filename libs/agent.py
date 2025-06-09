@@ -33,6 +33,7 @@ class Agent:
         @param verbose: Se True, mostra output dettagliato durante il caricamento (default: False)
         @param system_prompt: Prompt di sistema per inizializzare il comportamento dell'AI (default: messaggio in italiano)
         @param n_generate: Numero massimo di token da generare per risposta (default: 1024)
+        @param temperature: Temperatura per la generazione di testo. Più è bassa più il modello tenderà a scegliere token con alta probabilità (default: 0.6)
         """
         if not verbose:
             def my_log_callback(level, message, user_data): pass
