@@ -105,6 +105,7 @@ class Agent:
         
         in_think_check = False
         think_is_empty = False
+        only_empty_so_far = True
         
         for token in self.chat.generate_assistant_reply_stepped():
             if not in_think_check:
@@ -112,6 +113,11 @@ class Agent:
                     in_think_check = True
                     think_is_empty = True
                 else:
+                    if len(token.strip()) != 0:
+                        only_empty_so_far = False
+                    
+                    if only_empty_so_far: token = token.strip()
+                    
                     yield token
             else:
                 if token == "</think>":
@@ -122,6 +128,7 @@ class Agent:
                 if len(token.strip()) != 0:
                     if think_is_empty:
                         think_is_empty = False
+                        only_empty_so_far = False
                         yield f"{Colors.T_MAGENTA}<think>\n"
                     yield token
 
