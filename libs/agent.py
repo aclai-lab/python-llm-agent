@@ -131,7 +131,8 @@ class Agent:
                         think_is_empty = False
                         only_empty_so_far = False
                         yield f"{Colors.T_MAGENTA}<think>\n"
-                    yield token
+                
+                if not think_is_empty: yield token
 
     def start_conversation(self, incremental=True, forget=False):
         """
