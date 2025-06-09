@@ -12,7 +12,7 @@ MODELS_DIR = "./models/"
 class Agent:
     """
     Classe Agent che gestisce l'interazione con un modello LLM tramite llama.cpp.
-    
+
     Questa classe fornisce un'interfaccia per caricare un modello LLM, gestire le conversazioni
     e fornire risposte incrementali o complete agli utenti.
     """
@@ -26,7 +26,7 @@ class Agent:
     ):
         """
         Inizializza un nuovo agente LLM.
-        
+
         @param name: Nome del modello da caricare (senza estensione .gguf)
         @param n_ctx: Dimensione del contesto in token (default: 2048)
         @param verbose: Se True, mostra output dettagliato durante il caricamento (default: False)
@@ -37,7 +37,7 @@ class Agent:
             def my_log_callback(level, message, user_data): pass
             log_callback = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_char_p, ctypes.c_void_p)(my_log_callback)
             llama_log_set(log_callback, ctypes.c_void_p())
-        
+
         self.name = name
         self._prompt = ''
         InputManager.system_message("Caricamento del modello LLM...")
@@ -60,7 +60,7 @@ class Agent:
     def _get_name(self):
         """
         Restituisce il nome dell'agente formattato con colori.
-        
+
         @return: Nome dell'agente colorato in ciano
         """
         return Colors.cyan(self.name)
@@ -68,7 +68,7 @@ class Agent:
     def _send_prompt_to_llm(self, prompt: str):
         """
         Invia un prompt al modello LLM.
-        
+
         @param prompt: Il testo del prompt da inviare al modello
         """
         self.chat.send_message(self.chat.USER_KEY, prompt)
@@ -77,7 +77,7 @@ class Agent:
     def _show_llm_response(self, response=None):
         """
         Mostra la risposta dell'LLM nella console.
-        
+
         @param response: La risposta da mostrare. Se None, usa self._response (default: None)
         """
         if response is not None:
@@ -87,7 +87,7 @@ class Agent:
     def _generate_llm_response(self):
         """
         Genera una risposta completa dall'LLM e la memorizza in self._response.
-        
+
         Questo metodo genera l'intera risposta prima di restituirla.
         """
         self._response, self._remaining_ctx_tokens = self.chat.generate_assistant_reply()
@@ -95,17 +95,17 @@ class Agent:
     def _generate_llm_response_incremental(self):
         """
         Genera una risposta dall'LLM in modo incrementale (token per token).
-        
+
         Questo metodo filtra automaticamente i tag <think></think> vuoti per fornire
         una migliore esperienza utente durante la generazione incrementale.
-        
+
         @return: Generator che produce token di risposta uno alla volta
         """
         print(f"{self._get_name()}: ", end="")
-        
+
         buffer = []
         in_think_check = False
-        
+
         for token in self.chat.generate_assistant_reply_stepped():
             if not in_think_check:
                 if token == "<think>" or "</think>":
@@ -116,18 +116,18 @@ class Agent:
             else:
                 # We're checking what comes after <think>
                 buffer.append(token)
-                
+
                 # Check if we have </think> immediately after <think> (possibly with newlines)
                 # Join buffer to check the pattern
                 buffered_text = ''.join(buffer)
-                
+
                 # If we see </think>, check if it's right after <think> (with possible newlines)
                 if "</think>" in buffered_text:
                     # Extract content between <think> and </think>
                     start_idx = buffered_text.find("<think>") + 7
                     end_idx = buffered_text.find("</think>")
                     between_content = buffered_text[start_idx:end_idx]
-                    
+
                     # Check if between content is only whitespace/newlines
                     if between_content.strip() == "":
                         # Skip the entire <think></think> block
@@ -144,7 +144,7 @@ class Agent:
                     # Check if we have any non-whitespace content after <think>
                     # that's not part of </think>
                     think_content = buffered_text[7:]  # Content after "<think>"
-                    
+
                     # If we encounter any character that's not whitespace and not starting </think>
                     if think_content.strip() and not think_content.strip().startswith("</think>"):
                         # Yield everything in buffer
@@ -152,54 +152,54 @@ class Agent:
                             yield buf_token
                         buffer = []
                         in_think_check = False
-        
+
         # Yield any remaining buffered tokens
         for buf_token in buffer:
             yield buf_token
-    
-    def start_conversation(self, incremental=True):
+
+    def start_conversation(self, incremental=True, forget=False):
         """
         Avvia una conversazione interattiva con l'LLM.
-        
+
         Questo metodo gestisce il loop principale della conversazione, permettendo all'utente
         di interagire con il modello attraverso comandi speciali e input di testo.
-        
+
         Comandi supportati:
         - 'esci', 'exit', 'quit': Termina la conversazione
         - 'clear': Cancella il contesto della conversazione
         - 'stats': Mostra statistiche sui token utilizzati
-        
+
         @param incremental: Se True, mostra le risposte token per token; se False, mostra la risposta completa (default: True)
         """
         InputManager.system_message("Puoi iniziare a conversare con l'LLM!")
         InputManager.system_message("Scrivi 'esci' per terminare.")
         InputManager.system_message("Scrivi 'stats' per vedere le statistiche.")
         InputManager.system_message("Scrivi 'clear' per cancellare il contesto.")
-    
+
         try:
             while True:
                 # Mostra il prompt e attendi l'input dell'utente
                 InputManager.show_user_prompt()
-                
+
                 # Use multiline input support
                 user_input = InputManager._get_multiline_input()
                 if '/think' not in user_input:
                     user_input += ' /no_think'
                 self._send_prompt_to_llm(user_input)
-    
+
                 # Se l'utente ha scritto "esci" o "exit" o "quit" allora termina la conversazione
                 if InputManager.is_exit_word(self._prompt):
                     InputManager.system_message("Conversazione terminata.")
                     break
-    
+
                 if InputManager.is_clear_context_word(self._prompt):
                     self._reset_chat()
                     continue
-    
+
                 if InputManager.is_stats_word(self._prompt):
                     self._show_stats()
                     continue
-    
+
                 if incremental:
                     # Mostra la risposta dell'LLM in modo incrementale
                     for response in self._generate_llm_response_incremental():
@@ -208,9 +208,11 @@ class Agent:
                     # Mostra l'intera risposta dell'LLM direttamente quando è completamente generata
                     # Invia il prompt all'LLM e ricevi la risposta
                     self._generate_llm_response()
-    
+
                     # Mostra la risposta dell'LLM
                     self._show_llm_response()
+                if forget:
+                    self._reset_chat(silent=True)
         except KeyboardInterrupt:
             print()
             InputManager.system_message("Conversazione terminata.")
@@ -221,20 +223,27 @@ class Agent:
             else:
                 InputManager.error(f"Si è verificato un errore: {e}")
 
-    def _reset_chat(self):
+    def send_instruction(self, incremental=True):
+        """
+        Invia un'istruzione all'LLM.
+        """
+        self.start_conversation(incremental=incremental, forget=True)
+
+    def _reset_chat(self, silent=False):
         """
         Resetta il contesto della conversazione mantenendo il prompt di sistema.
-        
+
         Questo metodo cancella tutta la cronologia della conversazione ma mantiene
         il prompt di sistema originale per preservare il comportamento dell'AI.
         """
         self.chat.reset_chat(keep_system=True)
-        self._show_llm_response("Conversazione resettata: non ricordo più nulla :(")
+        if not silent:
+            self._show_llm_response("Conversazione resettata: non ricordo più nulla :(")
 
     def _show_stats(self):
         """
         Mostra le statistiche sui token utilizzati e disponibili.
-        
+
         Visualizza informazioni utili per monitorare l'utilizzo del contesto:
         - Token utilizzati nella conversazione corrente
         - Token rimanenti nel contesto disponibile
