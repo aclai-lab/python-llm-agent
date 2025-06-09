@@ -189,6 +189,9 @@ class Agent:
 
                 # Use multiline input support
                 user_input = InputManager._get_multiline_input()
+                
+                if not user_input.strip():
+                    continue
 
                 # Se l'utente ha scritto "esci" o "exit" o "quit" allora termina la conversazione
                 if InputManager.is_exit_word(user_input):
