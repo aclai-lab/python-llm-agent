@@ -23,7 +23,7 @@ class Agent:
         verbose=False,
         system_prompt: str = "Sei un assistente virtuale che risponde alle domande degli utenti.",
         n_generate: int = 1024,
-        temperature: float = 0.65
+        temperature: float = 0.6
     ):
         """
         Inizializza un nuovo agente LLM.
@@ -50,7 +50,7 @@ class Agent:
 
         # Se esiste carica il modello LLM usando llama.cpp via llama-cpp-python
         self.llm = Llama(model_path=self.model_path, n_ctx=n_ctx, verbose=verbose, seed=42, n_gpu_layers=-1)
-        self.chat = Chat(self.llm, n_generate=n_generate, temperature=temperature, top_p=0.87, top_k=20)
+        self.chat = Chat(self.llm, n_generate=n_generate, temperature=temperature, top_p=0.95, top_k=20)
         self.chat.send_message(Chat.SYSTEM_KEY, system_prompt)
         InputManager.system_message("Modello caricato.")
 
