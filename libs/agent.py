@@ -262,10 +262,35 @@ class Agent:
         tokens = self.chat.tokenize_text(text=text, add_bos=False, special=False)
         
         if show:
-            print(f"{Colors.T_BOLD}{'Token':>6} | {'Testo'}{Colors.T_BOLD_OFF}")
+            # Prepare token texts
+            token_texts = []
             for token_id in tokens:
                 token_text = self.chat.detokenize_tokens([token_id])
-                print(f"{token_id:>6} | {token_text}")
+                token_texts.append(token_text)
+            
+            # Calculate column widths
+            token_widths = [max(3, len(str(token_id))) for token_id in tokens]
+            text_widths = [max(3, len(token_text)) for token_text in token_texts]
+            col_widths = [max(tw, txtw) for tw, txtw in zip(token_widths, text_widths)]
+            
+            # Print header row
+            header_tokens = f"{Colors.T_BLUE}{Colors.T_BOLD}Token {Colors.T_BOLD_OFF}"
+            header_texts = f"{Colors.T_ORANGE}{Colors.T_BOLD}Testo {Colors.T_BOLD_OFF}"
+            
+            # Print token texts row
+            print(header_texts.ljust(10), end="| ")
+            for token_text, width in zip(token_texts, col_widths):
+                print(f"{token_text:>{width}}", end=" | ")
+            print()
+            
+            # Print token IDs row
+            print(header_tokens.ljust(10), end="| ")
+            for token_id, width in zip(tokens, col_widths):
+                print(f"{token_id:>{width}}", end=" | ")
+            print()
+            
+            print(Colors.T_RESET)
+            
         
         return tokens
     

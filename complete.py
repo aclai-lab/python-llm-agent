@@ -13,7 +13,7 @@ def main():
     agent = Agent(name="Qwen3-4B-Q4_K_M", n_generate=1)
 
     # Tokenizza una frase
-    token = agent.tokenize("Ciao a tutti,")
+    token = agent.tokenize("Ciao a tutti,", show=True)
     print(token)
     
     # De-tokenizza una frase
