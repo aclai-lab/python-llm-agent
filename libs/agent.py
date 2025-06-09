@@ -226,4 +226,3 @@ class Agent:
         """
         InputManager.system_message(f"  token usati: {self.chat.tokens_used()}")
         InputManager.system_message(f"  token rimanenti: {self.chat.context_available()}")
-        print(self.chat.get_raw_chat())
