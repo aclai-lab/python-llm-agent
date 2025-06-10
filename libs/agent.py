@@ -274,8 +274,8 @@ class Agent:
             col_widths = [max(tw, txtw) for tw, txtw in zip(token_widths, text_widths)]
             
             # Print header row
-            header_tokens = f"{Colors.T_BLUE}{Colors.T_BOLD}Token {Colors.T_BOLD_OFF}"
-            header_texts = f"{Colors.T_ORANGE}{Colors.T_BOLD}Testo {Colors.T_BOLD_OFF}"
+            header_tokens = f"{Colors.T_ORANGE}{Colors.T_BOLD}Token {Colors.T_BOLD_OFF}"
+            header_texts = f"{Colors.T_BLUE}{Colors.T_BOLD}Testo {Colors.T_BOLD_OFF}"
             
             # Print token texts row
             print(header_texts.ljust(10), end="| ")
